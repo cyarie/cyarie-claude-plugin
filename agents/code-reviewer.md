@@ -71,6 +71,9 @@ Use this exact format:
 ## Skills Applied
 - [skill]: [what it checked]
 
+## Strengths
+- [What the author did well — clean algorithms, thorough testing, good patterns]
+
 ## Critical Issues (count: N)
 ### N. [Title]
 **Location**: `file:line`
