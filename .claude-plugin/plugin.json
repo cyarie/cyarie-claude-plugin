@@ -1,6 +1,6 @@
 {
   "name": "cyarie-claude-plugin",
-  "description": "A collection of 18 skills, 5 commands, and 4 agents for software development: code quality, code review, architecture design (C4 model), testing, documentation, codebase research, and milestone planning.",
+  "description": "A collection of 19 skills, 5 commands, and 4 agents for software development: code quality, code review, architecture design (C4 model), testing, documentation, codebase research, and milestone planning.",
   "version": "0.4.0",
   "author": {
     "name": "Chris Yarie"

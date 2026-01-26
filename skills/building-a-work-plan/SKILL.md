@@ -264,19 +264,25 @@ Your work plan is ready at:
 
 ### Next Steps
 
-Execution support is coming in a future skill (`/execute-work-plan`).
+To execute this work plan:
 
-For now, you can:
-1. Review the milestone files in `[plan-directory]`
-2. Implement tasks manually, following the TDD workflow in each task
-3. Use the task list in each milestone to track progress
+```
+/execute-work-plan [absolute-path-to-plan-directory]
+```
+
+This will:
+1. Read milestones just-in-time (one at a time)
+2. Dispatch `code-worker` agents for each task
+3. Run code review once per milestone
+4. Fix all issues before proceeding to next milestone
+5. Provide a full implementation report when complete
 
 ### To Resume Later
 
 If you need to resume work on this plan in a new session:
 1. Run `/clear` to reset context
-2. Point Claude to the plan directory
-3. Pick up where you left off
+2. Run `/execute-work-plan [plan-directory-path]`
+3. The skill will detect progress and resume from the next incomplete task
 
 ### Files Created
 
