@@ -25,15 +25,18 @@ When performing tasks in this codebase, activate the appropriate skills:
 - **Reviewing milestones**: Use `/start-milestone-review` command to refine milestone definitions
 - **Writing acceptance criteria**: Use `/writing-effective-acceptance-criteria` for testable AC
 
+**Context Maintenance**
+- **Updating project context**: Use `/update-context` after work plan completion or significant refactors to keep CLAUDE.md files accurate
+
 **Design-to-Implementation Workflow**
 
 The full workflow from design to implementation follows this sequence:
 
 ```
-/review-and-validate-design → /c4-the-design → /start-milestone-review → /build-work-plan → /execute-work-plan
+/review-and-validate-design → /c4-the-design → /start-milestone-review → /build-work-plan → /execute-work-plan → /update-context
 ```
 
-Each command hands off to the next with clear instructions. Run `/clear` between steps to maintain fresh context.
+Each command hands off to the next with clear instructions. Run `/clear` between steps to maintain fresh context. The `/execute-work-plan` command automatically invokes `/update-context` at the end, but you can also run it manually after any significant changes.
 
 ### Skill Development Guidelines
 
@@ -49,6 +52,7 @@ When creating or modifying skills:
 - Skills live in `skills/<skill-name>/`
 - Each skill directory contains a `SKILL.md` file with directives and optional reference files
 - Commands live in `commands/` and provide user-facing entry points
+- Agents live in `agents/` and define specialized roles (code-worker, code-reviewer, bug-worker, documentarian)
 - Plugin configuration is in `.claude-plugin/plugin.json`
 - Examples live in `docs/examples/` demonstrating end-to-end workflows
 
