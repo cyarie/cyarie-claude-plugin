@@ -25,6 +25,16 @@ When performing tasks in this codebase, activate the appropriate skills:
 - **Reviewing milestones**: Use `/start-milestone-review` command to refine milestone definitions
 - **Writing acceptance criteria**: Use `/writing-effective-acceptance-criteria` for testable AC
 
+**Design-to-Implementation Workflow**
+
+The full workflow from design to implementation follows this sequence:
+
+```
+/review-and-validate-design → /c4-the-design → /start-milestone-review → /build-work-plan → /execute-work-plan
+```
+
+Each command hands off to the next with clear instructions. Run `/clear` between steps to maintain fresh context.
+
 ### Skill Development Guidelines
 
 When creating or modifying skills:

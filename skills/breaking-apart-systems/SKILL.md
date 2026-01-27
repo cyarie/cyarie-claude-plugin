@@ -323,6 +323,48 @@ Integration:
   → Include: diagrams, decisions, resolved questions
 ```
 
+## Handoff
+
+When C4 decomposition is complete:
+
+1. Summarize the architecture (containers, components, data flow pattern)
+2. Verify diagrams are integrated into the design document
+3. Present the handoff instructions using the exact format below
+
+**Handoff Instructions (present verbatim, substituting the actual filename):**
+
+---
+
+**C4 decomposition complete.**
+
+Your system architecture is now defined with containers and components. The next step is refining your milestones to align with this architecture.
+
+**Next steps:**
+
+1. **Copy this command now** (before clearing):
+   ```
+   /start-milestone-review @path/to/your-design-doc.md
+   ```
+
+2. **Clear context:**
+   ```
+   /clear
+   ```
+
+3. **Paste and run** the command you copied in step 1
+
+This hands off your architecture to milestone refinement, which will:
+- Validate milestones cover all components
+- Add job stories, descriptions, and acceptance criteria
+- Ensure milestones are in correct dependency order
+
+---
+
+**The full workflow:**
+```
+/review-and-validate-design → /c4-the-design → /start-milestone-review → /build-work-plan → /execute-work-plan
+```
+
 ## Summary
 
 1. **Complete each level before proceeding.** System → Container → Component, with user approval at each gate.
