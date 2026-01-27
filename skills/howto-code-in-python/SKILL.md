@@ -43,6 +43,7 @@ This skill provides opinionated guidance for writing and reviewing Python 3.12+ 
 - [ ] Resources managed with `with` statements
 - [ ] Naming conventions followed consistently
 - [ ] Functions focused and reasonably sized
+- [ ] **No `Any` type** — defeats type checking entirely (see examples below)
 
 ## Examples
 
@@ -168,6 +169,44 @@ result = function_with_long_name(argument_one, \
     argument_two)
 ```
 
+### Avoiding `Any` Type
+
+```python
+# Good — use specific types
+def process_items(items: list[str]) -> dict[str, int]:
+    return {item: len(item) for item in items}
+
+# Good — use TypeVar for generic code
+T = TypeVar("T")
+def first(items: list[T]) -> T | None:
+    return items[0] if items else None
+
+# Good — use Protocol for structural typing
+class Drawable(Protocol):
+    def draw(self) -> None: ...
+
+def render(obj: Drawable) -> None:
+    obj.draw()
+
+# Good — use object if truly accepting anything (but can't do much with it)
+def log_value(value: object) -> None:
+    print(str(value))
+
+# Bad — Any opts out of type checking entirely
+def process(data: Any) -> Any:  # mypy can't catch errors here
+    return data.foo.bar.baz  # no error even if this is wrong
+
+# Bad — hiding type information
+def get_config() -> dict[str, Any]:  # what's actually in here?
+    ...
+```
+
+**When you see `Any`**, ask: what type should this actually be? Common fixes:
+- JSON data → use `TypedDict` or Pydantic models
+- Generic containers → use `TypeVar`
+- Callable with unknown signature → use `Callable[..., ReturnType]`
+- Truly dynamic data → use `object` (safer, can't call arbitrary methods)
+
 ## Quick Reference
 
 ```
@@ -181,6 +220,7 @@ Strings:      f-strings, consistent quotes
 Logging:      logger.info("msg %s", val) not f-strings
 Resources:    Always use with statements
 Names:        module_name, ClassName, function_name, CONSTANT
+Types:        No Any — use specific types, TypeVar, Protocol, or object
 ```
 
 ## Common Mistakes
@@ -194,6 +234,8 @@ Names:        module_name, ClassName, function_name, CONSTANT
 | `staticmethod` | No benefit over module function | Use module-level function |
 | Backslash line continuation | Fragile, error-prone | Use parentheses |
 | `if x == None:` | Fails for objects overriding `__eq__` | Use `if x is None:` |
+| Using `Any` type | Opts out of type checking entirely | Use specific types, TypeVar, Protocol, or object |
+| `dict[str, Any]` for config/JSON | Hides structure, no IDE completion | Use TypedDict or Pydantic models |
 
 ## Anti-Rationalizations
 
@@ -202,6 +244,8 @@ Names:        module_name, ClassName, function_name, CONSTANT
 - "f-strings in logging are fine here" — Log aggregation tools depend on patterns. Use placeholders.
 - "staticmethod documents intent" — Module-level functions are clearer and more Pythonic.
 - "80 characters is too restrictive" — It forces better naming and decomposition. Embrace it.
+- "Any is fine for this dynamic data" — No. Define the shape with TypedDict, Protocol, or Pydantic. `Any` means mypy can't help you.
+- "I'll fix the types later" — You won't. Type debt compounds. Fix it now or it spreads.
 
 ## Supporting References
 
