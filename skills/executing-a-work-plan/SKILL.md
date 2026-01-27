@@ -259,6 +259,36 @@ After all milestones are complete:
 2. **Fix any remaining issues** with `bug-worker`
 3. **Loop until zero issues**
 
+### Step 3a: Update Project Context
+
+After final review passes with zero issues:
+
+1. **Capture the full commit range**:
+```bash
+# Base: commit before work plan execution started
+# HEAD: current commit after all work is done
+```
+
+2. **Dispatch `documentarian` agent**:
+```
+Analyze the changes from this work plan execution and update project context.
+
+Work plan: [absolute path to work plan directory]
+Base commit: [commit SHA before execution started]
+HEAD: [current HEAD]
+
+Focus on contract-level changes: new modules, API changes, architectural decisions.
+Skip internal implementation details.
+
+Present updates for human approval before committing.
+```
+
+3. **Print the full agent response.** Human transparency applies here too.
+
+4. **Wait for human approval.** The documentarian agent handles this via AskUserQuestion.
+
+5. **Proceed to completion report** after context updates are committed (or skipped by user choice).
+
 ### Step 4: Complete
 
 Provide completion report:
@@ -316,6 +346,7 @@ If interrupted mid-execution:
 | `code-worker` | Implements individual tasks | For each task in a milestone |
 | `code-reviewer` | Reviews completed work | After each task AND after milestone completion |
 | `bug-worker` | Fixes review issues | When any review finds issues |
+| `documentarian` | Updates project context files | After final review passes, before completion report |
 
 ## Common Mistakes
 
@@ -328,6 +359,7 @@ If interrupted mid-execution:
 | Skipping functionality tests | Untested code ships bugs | Verify plan includes tests |
 | Continuing after 3 strikes | Infinite loop on unfixable issues | Escalate to human |
 | Guessing work plan path | Wrong plan, wasted effort | Always ask if not provided |
+| Skipping context update | Future agents lack accurate context | Always dispatch documentarian after final review |
 
 ## Anti-Rationalizations
 
@@ -339,6 +371,7 @@ If interrupted mid-execution:
 - "I'll just say how many issues were found" — No. Print every issue with Location, Issue, Impact, Fix. The user needs details to understand what's happening.
 - "Minor issues can wait until the end" — No. Fix ALL issues including Minor before proceeding.
 - "Three cycles should be enough, I'll try once more" — No. Three strikes means escalate.
+- "The code is self-documenting" — No. Contract-level context helps future agents understand intent, not just implementation. Dispatch the documentarian.
 
 ## Summary
 
