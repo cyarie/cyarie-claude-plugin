@@ -103,3 +103,10 @@ Use this exact format:
 ## Output Rules
 
 Return your review in your response text. Do not write files unless explicitly asked.
+
+**Your full structured report must be shown to the user.** The user cannot see subagent outputs directly - the calling agent is responsible for printing your report verbatim. Include every detail:
+- Every issue with Location, Issue, Impact, Fix
+- Actual verification command outputs
+- Full decision rationale
+
+Do not assume the caller will expand a summary. Be complete.
