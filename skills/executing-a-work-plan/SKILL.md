@@ -18,12 +18,22 @@ This skill orchestrates the execution of work plans created by `building-a-work-
 
 The human cannot see subagent outputs directly. You are their window into the work. Show all details:
 - Test counts and results
-- Issue lists with locations
+- Issue lists with locations (file:line for EVERY issue)
 - Commit hashes
 - Error messages
 - Verification evidence
 
-Never summarize agent output. Print it completely.
+**Never summarize agent output. Print it completely.**
+
+**For code reviews specifically**: Print the ENTIRE structured report including:
+- Status (APPROVED/BLOCKED)
+- Issue Summary counts
+- Verification Evidence (actual command outputs)
+- Every issue with Location, Issue, Impact, Fix
+- Decision
+
+Do NOT write: "The code review found 2 Important issues..."
+DO write: [paste the full markdown report from the code-reviewer]
 
 ### Just-in-Time Loading
 
@@ -326,6 +336,7 @@ If interrupted mid-execution:
 - "I'll batch the reviews to save tokens" — No. Per-task review catches bugs before they compound. Fix early.
 - "The task review passed, skip milestone review" — No. Milestone review catches cross-task integration issues.
 - "The agent response is too long, I'll summarize" — No. Human transparency requires full output.
+- "I'll just say how many issues were found" — No. Print every issue with Location, Issue, Impact, Fix. The user needs details to understand what's happening.
 - "Minor issues can wait until the end" — No. Fix ALL issues including Minor before proceeding.
 - "Three cycles should be enough, I'll try once more" — No. Three strikes means escalate.
 
