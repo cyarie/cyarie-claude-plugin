@@ -329,6 +329,48 @@ engineers can see where new functionality belongs.
 progressive discovery working.
 ```
 
+## Handoff
+
+When milestone review is complete:
+
+1. Summarize the milestones (count, key changes, any accepted gaps)
+2. Verify milestones are integrated into the design document
+3. Present the handoff instructions using the exact format below
+
+**Handoff Instructions (present verbatim, substituting the actual filename):**
+
+---
+
+**Milestone review complete.**
+
+Your milestones now have job stories, descriptions, acceptance criteria, and demos. The next step is creating a detailed work plan for implementation.
+
+**Next steps:**
+
+1. **Copy this command now** (before clearing):
+   ```
+   /build-work-plan @path/to/your-design-doc.md
+   ```
+
+2. **Clear context:**
+   ```
+   /clear
+   ```
+
+3. **Paste and run** the command you copied in step 1
+
+This hands off your refined milestones to work plan creation, which will:
+- Investigate the codebase for testing patterns and design assumptions
+- Decompose each milestone into granular, TDD-aligned tasks
+- Create milestone files in `docs/work-plans/`
+
+---
+
+**The full workflow:**
+```
+/review-and-validate-design → /c4-the-design → /start-milestone-review → /build-work-plan → /execute-work-plan
+```
+
 ## Summary
 
 1. **Always write the job story first.** It provides the "why" that guides description and AC.

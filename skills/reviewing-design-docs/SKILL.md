@@ -74,15 +74,14 @@ When review is complete:
 
 **Design review complete.**
 
-Your design document is ready for milestone planning. Implementation planning works best with fresh context, so we'll clear this conversation before starting.
+Your design document is ready for C4 decomposition. This will break down your system into containers and components before milestone refinement.
 
 **Next steps:**
 
 1. **Copy this command now** (before clearing):
    ```
-   /build-milestone-work-plan @path/to/your-design-doc.md .
+   /c4-the-design @path/to/your-design-doc.md
    ```
-   *(Include the trailing period — it anchors the working directory)*
 
 2. **Clear context:**
    ```
@@ -91,9 +90,17 @@ Your design document is ready for milestone planning. Implementation planning wo
 
 3. **Paste and run** the command you copied in step 1
 
-This hands off your approved design to the milestone planning phase, which will break each milestone into concrete implementation tasks.
+This hands off your approved design to the C4 decomposition phase, which will:
+- Define system context, containers, and components
+- Create architecture diagrams
+- Prepare the foundation for milestone refinement
 
 ---
+
+**The full workflow:**
+```
+/review-and-validate-design → /c4-the-design → /start-milestone-review → /build-work-plan → /execute-work-plan
+```
 
 **Why copy-then-clear?** Long conversations accumulate context that degrades planning quality. `/clear` gives the next phase a clean slate while the design doc file preserves all decisions made during review.
 
