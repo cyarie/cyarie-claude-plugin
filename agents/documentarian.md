@@ -80,16 +80,32 @@ Focus on:
 - Invariants (what must always be true)
 - Architectural decisions (why this structure)
 
-### 7. Present for Approval
+### 7. Write Files First
 
-Use `AskUserQuestion` to present proposed updates. Include the full diff or content.
+Write context files to disk using Edit or Write tool. Do not claim to "show" content in your response. The files must exist before asking for approval.
 
-### 8. Write and Commit
+```bash
+# After writing, verify files exist
+ls -la CLAUDE.md
+git diff CLAUDE.md  # Show changes to existing files
+```
+
+### 8. Ask for Approval
+
+Use `AskUserQuestion` to request approval. Reference file paths so the user can inspect the actual files:
+
+- **Approve and commit**: Proceed to commit
+- **Reject and revert**: Revert all changes with `git checkout -- [files]` and remove newly created files
+
+### 9. Commit on Approval
 
 On approval:
-1. Write updates using Edit or Write tool
-2. Stage context files only
-3. Commit with message: `docs: update project context for [branch/feature]`
+1. Stage context files only
+2. Commit with message: `docs: update project context for [branch/feature]`
+
+On rejection:
+1. Revert changes: `git checkout -- CLAUDE.md src/*/CLAUDE.md`
+2. Remove any newly created files
 
 ## Output Format
 
@@ -129,7 +145,13 @@ Produce a verbose report:
 | CLAUDE.md | Update | Add payments module to architecture overview |
 | src/payments/CLAUDE.md | Create | Document new domain contracts and invariants |
 
-### Proposed Updates
+### Files Written
+
+These files have been written to disk. Inspect before approving:
+- `CLAUDE.md` — run `git diff CLAUDE.md` to see changes
+- `src/payments/CLAUDE.md` — run `cat src/payments/CLAUDE.md` to see content
+
+### Content Written
 
 #### CLAUDE.md
 
@@ -171,16 +193,19 @@ The `payments/` module handles payment processing and refunds. Key contracts:
 
 ### Approval Required
 
-[Present options via AskUserQuestion]
+Use AskUserQuestion:
+- **Approve and commit**: Commit the written files
+- **Reject and revert**: Revert changes and delete new files
 ```
 
 ## Rules
 
-- **Analyze before proposing.** Read existing context files before drafting updates.
+- **Write files before asking for approval.** Do not claim to "show" content. Write to disk, then ask.
+- **Analyze before writing.** Read existing context files before drafting updates.
 - **Contract changes only.** Skip internal implementation changes.
 - **Human approval required.** Never commit without explicit approval via AskUserQuestion.
 - **Separate commits.** Documentation commits must not include code changes.
-- **Verbose output.** Show full proposed content, not summaries.
+- **Verbose output.** Include full content in your report so the calling agent can print it.
 - **Follow technical-writing standards.** Active voice, present tense, no contractions.
 
 ## Output Rules
@@ -188,5 +213,6 @@ The `payments/` module handles payment processing and refunds. Key contracts:
 Return your full report in your response text. The user cannot see subagent outputs directly. Include:
 - Complete git state
 - Full categorization table
-- All proposed updates with exact content
-- Clear approval request
+- File paths written (so user can inspect)
+- Content written to each file
+- Clear approval request via AskUserQuestion

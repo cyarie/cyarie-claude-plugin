@@ -104,31 +104,41 @@ Rationale:
 - Domain-specific invariants (all amounts in cents, idempotency keys required)
 ```
 
-### Step 8: Present Changes to Human
+### Step 8: Write Files First
 
-Use `AskUserQuestion` to present proposed updates:
+Write the context files using the Edit or Write tool. Do not claim to "show" content in your response. The files must exist on disk before asking for approval.
+
+```bash
+# After writing, verify files exist
+ls -la CLAUDE.md src/*/CLAUDE.md
+```
+
+### Step 9: Ask for Approval
+
+Use `AskUserQuestion` to request approval. Reference file paths so the user can inspect the actual files:
 
 ```
-I propose the following context updates:
+I have written the following context updates:
 
-**CLAUDE.md** (update):
-- Add: New `payments` module overview
-- Update: Architecture section with payment flow
+**Files written:**
+- `CLAUDE.md` (updated)
+- `src/payments/CLAUDE.md` (created)
 
-**src/payments/CLAUDE.md** (create):
-- Document PaymentProcessor contract
-- Document RefundHandler contract
-- List invariants (amounts in cents, idempotency)
+You can inspect these files before approving. Run `git diff` to see changes to existing files.
 
 Approve these updates?
-- Approve all
-- Approve with modifications (provide details)
-- Skip context update
+- Approve and commit
+- Reject and revert changes
 ```
 
-### Step 9: Write Approved Updates
+**On approval:** Proceed to commit.
 
-On approval, write the context files using the Edit or Write tool.
+**On rejection:** Revert the changes:
+```bash
+git checkout -- CLAUDE.md src/*/CLAUDE.md
+# Remove any newly created files
+rm src/payments/CLAUDE.md  # if it was new
+```
 
 ### Step 10: Commit Documentation Separately
 
@@ -149,9 +159,9 @@ git commit -m "docs: update project context for [branch/feature]"
 5. Read existing context
 6. Draft updates (contracts, invariants, decisions)
 7. Recommend new domain files if needed
-8. Present to human (AskUserQuestion)
-9. Write approved updates
-10. Commit separately (docs: update project context)
+8. Write files to disk (do not just "show" them)
+9. Ask for approval with file paths
+10. On approval: commit; on rejection: revert
 ```
 
 ## Common Mistakes
@@ -164,6 +174,7 @@ git commit -m "docs: update project context for [branch/feature]"
 | Bundling with code commits | Mixes concerns, harder to review | Separate documentation commits |
 | Creating domain files too early | Single-file domains do not need their own context | Wait for 3+ files with distinct contracts |
 | Duplicating root content in domains | Causes drift and bloat | Cross-reference; do not duplicate |
+| Claiming to "show" content without writing files | User cannot verify what does not exist | Write files first, then ask for approval |
 
 ## Anti-Rationalizations
 
