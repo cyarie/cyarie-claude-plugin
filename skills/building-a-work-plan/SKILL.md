@@ -169,8 +169,9 @@ For each milestone M:
    - **Revise**: I have feedback on specific tasks (user provides details via "Other")
 
    Do not proceed until user approves or revisions are complete.
-8. **If Batch mode**: Continue to next milestone
-9. Mark sub-task complete
+8. **Write milestone to disk immediately after approval** (enables session recovery)
+9. **If Batch mode**: Continue to next milestone
+10. Mark sub-task complete
 
 Mark Task #4 complete when all milestones are planned.
 
