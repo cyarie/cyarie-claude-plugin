@@ -106,7 +106,7 @@ Mark Task #1 complete.
 
 **Task #2: Testing patterns**
 
-Dispatch `codebase-investigator` agent:
+Dispatch `codebase-explorer` agent:
 
 ```
 Investigate the testing patterns in this codebase:
@@ -123,7 +123,7 @@ Document findings. Mark Task #2 complete.
 
 **Task #3: Design assumptions** (sequential after #2)
 
-Dispatch `codebase-investigator` agent:
+Dispatch `codebase-explorer` agent:
 
 ```
 Verify these design assumptions against the current codebase:
@@ -177,7 +177,7 @@ Mark Task #4 complete when all milestones are planned.
 
 ### Phase 3: Post-Planning Verification (Task #5)
 
-Dispatch `codebase-investigator` agent:
+Dispatch `codebase-explorer` agent:
 
 ```
 Verify the planned tasks are implementable:

@@ -66,10 +66,10 @@ This plugin supports a structured workflow from initial design through implement
 │                                ┌─────────────────┐                      │
 │                                │ /execute-work-  │                      │
 │                                │ plan            │                      │
-│                                │ (coming soon)   │                      │
 │                                │                 │                      │
-│                                │ Automated task  │                      │
-│                                │ implementation  │                      │
+│                                │ Per-task review │                      │
+│                                │ + milestone     │                      │
+│                                │ integration     │                      │
 │                                └─────────────────┘                      │
 │                                                                         │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -141,17 +141,23 @@ Convert milestones into granular, implementable tasks.
 
 **Output**: Work plan files in `docs/work-plans/YYYY-MM-DD-<plan-name>/milestone_##.md`
 
-#### Phase 5: Execution (Coming Soon)
+#### Phase 5: Execution
 
-Execute the work plan task by task.
+Execute the work plan task by task with automated code review.
 
 ```bash
 /execute-work-plan docs/work-plans/2025-01-26-my-feature/
 ```
 
-**Current status**: Implement tasks manually by following the task definitions in each milestone file.
+**What happens**:
+1. Reads milestones just-in-time (preserves context)
+2. Dispatches `code-worker` agents for each task
+3. Runs code review after every task (catches bugs early)
+4. Runs milestone-level review (catches cross-task issues)
+5. Fixes all issues before proceeding
+6. Three-strike rule: escalates persistent issues to you
 
-**Future**: Automated task execution with progress tracking.
+**Output**: Fully implemented and reviewed code with commit history.
 
 ### Quick Reference
 
@@ -210,7 +216,7 @@ Commands provide structured workflows for common tasks:
 | `/c4-the-design` | Decompose a design document into C4 model (System → Container → Component) | C4 Decomposition |
 | `/start-milestone-review` | Review and refine milestones with job stories, AC, and demos | Milestone Review |
 | `/build-work-plan` | Convert milestones into granular tasks with TDD workflow | Work Plan Creation |
-| `/execute-work-plan` | Execute a work plan (coming soon) | Execution |
+| `/execute-work-plan` | Execute a work plan with per-task code review | Execution |
 
 ### Example Usage
 
@@ -220,9 +226,7 @@ Commands provide structured workflows for common tasks:
 /c4-the-design docs/designs/user-auth.md
 /start-milestone-review docs/designs/user-auth.md
 /build-work-plan docs/designs/user-auth.md
-
-# Implement tasks using the generated work plan
-# (manual for now; automated execution coming soon)
+/execute-work-plan docs/work-plans/2025-01-26-user-auth/
 ```
 
 ## Project Structure
@@ -231,7 +235,7 @@ Commands provide structured workflows for common tasks:
 cyarie-claude-plugin/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin metadata and configuration
-├── skills/                      # 15 skill definitions
+├── skills/                      # 19 skill definitions
 │   ├── breaking-apart-systems/  # C4 decomposition
 │   ├── building-a-work-plan/    # Work plan orchestration
 │   ├── defensive-coding/        # Input validation, error handling

@@ -69,13 +69,13 @@ The 8-milestone limit is a smell detector. Larger scope often indicates the desi
 
 Before writing any tasks, verify the codebase matches design assumptions.
 
-**Step 1**: Dispatch `codebase-investigator` agent to investigate **testing patterns**:
+**Step 1**: Dispatch `codebase-explorer` agent to investigate **testing patterns**:
 - How are tests structured in this codebase?
 - What mocking patterns exist?
 - What fixtures are available?
 - Where do tests live (`tests/`, `test/`, colocated)?
 
-**Step 2** (Sequential, after Step 1): Dispatch `codebase-investigator` agent to verify **design assumptions**:
+**Step 2** (Sequential, after Step 1): Dispatch `codebase-explorer` agent to verify **design assumptions**:
 - Do files exist where the design expects them?
 - Do expected features/dependencies exist?
 - Is there drift between design doc and current code?
@@ -285,7 +285,7 @@ Do not proceed to the next milestone until user approves or revisions are comple
 
 After writing tasks for a milestone:
 
-1. Dispatch `codebase-investigator` to verify **tasks are implementable**:
+1. Dispatch `codebase-explorer` to verify **tasks are implementable**:
    - Do target files/directories exist?
    - Are import paths valid?
    - Any conflicts with existing code?
@@ -379,7 +379,7 @@ Missing header fields cause implementation failures:
 - [ ] Architecture references specific C4 container/component
 - [ ] Tech Stack lists technologies (not "TBD")
 - [ ] Scope references specific design doc section
-- [ ] Codebase Verification has timestamp and findings (from codebase-investigator)
+- [ ] Codebase Verification has timestamp and findings (from codebase-explorer)
 - [ ] References include absolute paths
 
 ### Task Template
