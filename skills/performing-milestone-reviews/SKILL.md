@@ -181,8 +181,8 @@ Descriptions should include design requirements but omit implementation details.
 
 **Constraints**:
 - Testable (can verify pass/fail)
-- Max 5 (excluding automated tests)
-- More than 5 = milestone is too broad, split it
+- Target 5 AC (excluding automated tests) — more is a signal, not a hard limit
+- No compound conditions ("X and Y") — split these
 
 **Format options** (ask user preference if unclear):
 
@@ -193,19 +193,30 @@ Descriptions should include design requirements but omit implementation details.
 | Rules-based | Business logic, conditionals ("if X then Y") |
 | Quantitative | Performance, SLAs, specific numbers |
 
+**When you identify more than 5 AC**:
+
+1. **Propose all AC first.** Don't silently drop criteria — they may be important.
+2. **Use `AskUserQuestion`** to present options:
+   - Keep all AC (justified if truly atomic and necessary)
+   - Split into separate milestones (if AC cluster into distinct deliverables)
+   - Demote some to task-level AC (if some are implementation details)
+   - Consolidate redundant AC (if some overlap)
+3. **Document the decision.** Note why the constraint was exceeded or how it was resolved.
+
 **Validation**:
 - [ ] Each AC is testable (clear pass/fail)
-- [ ] Count ≤ 5 (or milestone needs splitting)
+- [ ] AC count discussed with user if > 5
 - [ ] AC match the specificity of the description
 - [ ] No compound conditions ("X and Y") — split these
 
 **Review process**:
 1. Present each proposed AC with rationale for why it's testable and necessary
-2. Use `AskUserQuestion` with options:
+2. If count > 5, use `AskUserQuestion` to discuss options (see above)
+3. Use `AskUserQuestion` with options:
    - Keep proposed
    - Offer feedback (user provides changes)
    - Other (free-form input)
-3. Iterate until approved, then proceed to Step 4
+4. Iterate until approved, then proceed to Step 4
 
 ### Step 4: Define the Demo
 
@@ -250,7 +261,7 @@ Before finalizing each milestone, verify:
 - [ ] Description explains WHY, not just WHAT
 - [ ] Description includes design requirements, omits implementation details
 - [ ] AC are testable (can verify pass/fail)
-- [ ] AC count ≤ 5 (or milestone needs splitting)
+- [ ] AC count discussed with user if > 5
 - [ ] Demo is observable and maps to job story outcome
 
 Present this checklist to the user and get explicit approval before moving to the next milestone.
@@ -262,7 +273,7 @@ Present this checklist to the user and get explicit approval before moving to th
 | No job story | No "why" context for engineers | Add situation/motivation/outcome |
 | Description is all "how" | Prescriptive, not outcome-focused | Rewrite focusing on what and why |
 | Vague AC ("works correctly") | Not testable | Specify observable behavior |
-| 6+ AC | Milestone too broad | Split into smaller milestones |
+| 6+ AC without discussion | User didn't consciously choose scope | Propose all AC, then ask user how to handle |
 | AC enumerate tasks | Wrong grain | Raise to milestone level; save details for task breakdown |
 | Demo is "run tests" | Not stakeholder-observable | Describe user-visible behavior |
 | Implementation detail in description | Constrains engineer's choices | Remove unless it's a design requirement |
@@ -281,7 +292,7 @@ Present this checklist to the user and get explicit approval before moving to th
 
 - "The job story is obvious" — If it's obvious, it's quick to write. Engineers (especially LLMs) benefit from explicit context.
 - "We'll figure out AC during implementation" — AC discovered during implementation become bugs or scope creep. Define them now.
-- "Five AC is too restrictive" — Five is a signal. If you need more, the milestone is too broad. Split it.
+- "Five AC is too restrictive" — Five is a signal, not a prison. If you need more, propose them all and ask the user how to proceed. The constraint exists to surface scope conversations, not to silently drop important criteria.
 - "The description in the design doc is enough" — Design doc descriptions are often vague. Flesh them out with why.
 - "This milestone is too simple for a job story" — Simple milestones still serve a purpose. Articulate it.
 
@@ -375,6 +386,6 @@ This hands off your refined milestones to work plan creation, which will:
 
 1. **Always write the job story first.** It provides the "why" that guides description and AC.
 2. **Descriptions explain what and why, not how.** Include design requirements; omit implementation details.
-3. **Max 5 AC per milestone.** More than 5 means split the milestone.
+3. **Target 5 AC per milestone.** More than 5 is a signal — propose all, then ask user how to proceed.
 4. **Demos are stakeholder-observable.** Not "run tests" — describe what a user would see.
 5. **Work interactively.** Review one milestone at a time; get user approval before proceeding.
