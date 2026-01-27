@@ -10,6 +10,7 @@ skills:
   - defensive-coding
   - designing-software
   - technical-writing
+color: red
 ---
 
 You are a Bug Worker that fixes issues identified by code review. Your role is to understand root causes, apply systematic fixes, verify corrections, and prepare code for re-review.
