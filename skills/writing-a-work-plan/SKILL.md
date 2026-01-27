@@ -36,11 +36,20 @@ Always load these when writing work plans:
 
 When the user invokes this skill or requests a work plan:
 
-1. **Locate the design document.** Ask for the path if not provided.
-2. **Validate scope.** Check milestone count (see Phase 1).
-3. **Choose review mode.** Ask user:
-   - Interactive: plan one milestone, review, proceed
-   - Batch: plan all milestones, then review all
+**FIRST, before any other action**, determine review mode:
+
+1. **Choose review mode** (MANDATORY FIRST STEP):
+
+   **STOP. You MUST use AskUserQuestion here before proceeding.**
+
+   Use `AskUserQuestion` with these options:
+   - **Interactive** (Recommended): Plan one milestone, get approval, proceed. Catches errors early.
+   - **Batch**: Plan all milestones, then review all. Faster but riskier.
+
+   Do not assume a default. Do not proceed until the user responds.
+
+2. **Locate the design document.** Ask for the path if not provided.
+3. **Validate scope.** Check milestone count (see Phase 1).
 4. **Process milestones.** Follow the Core Pattern below.
 
 ## Core Pattern
@@ -214,7 +223,11 @@ Present the task breakdown for approval:
 - Highlight any assumptions made
 - Note any issues or open questions
 
-Get explicit approval before proceeding to the next milestone.
+**Use `AskUserQuestion` to get explicit approval**:
+- **Approve**: Milestone plan looks good, proceed to next milestone
+- **Revise**: I have feedback on specific tasks (user provides details via "Other")
+
+Do not proceed to the next milestone until user approves or revisions are complete.
 
 ### Phase 4: Codebase Verification (Post-Planning)
 
@@ -231,11 +244,25 @@ After writing tasks for a milestone:
 
 ### Phase 5: Code Review
 
+**This phase is MANDATORY. Do not present a plan to the user without running code review.**
+
 Run `code-reviewer` agent over the milestone plan.
 
-**Review mode** (user chooses at session start):
-- **Fix before presenting**: Automatically fix issues; user sees clean plan
-- **Present issues to user**: Show issues for user decision
+**Review mode** (determined at session start — see Entry Point step 1):
+- **Interactive mode**: Present issues to user; let user decide what to fix
+- **Batch mode**: Automatically fix issues; user sees clean plan
+
+**Code review checks**:
+- All AC have corresponding tasks
+- Tasks include concrete test code where applicable
+- Verification steps are explicit (not "verify it works")
+- Commit messages follow conventions
+- Dependencies are noted (Blocks/Blocked By)
+- No ambiguous or vague steps
+
+**Verification**: Before proceeding to Phase 6, confirm:
+- [ ] Code reviewer agent was dispatched
+- [ ] All issues were addressed
 
 ### Phase 6: Write to Disk
 
@@ -251,6 +278,13 @@ docs/work-plans/YYYY-MM-DD-<plan-name>/
 ## Document Format
 
 ### Milestone Plan Header
+
+**All fields in this header are REQUIRED. Do not write a milestone plan without completing every field.**
+
+Missing header fields cause implementation failures:
+- Missing **Goal**: Implementer doesn't know what "done" looks like
+- Missing **Architecture**: Implementer makes wrong structural decisions
+- Missing **Codebase Verification**: Tasks may reference nonexistent files
 
 ```markdown
 # Milestone N: [Title]
@@ -281,6 +315,14 @@ docs/work-plans/YYYY-MM-DD-<plan-name>/
 
 [Tasks follow here]
 ```
+
+**Verification before proceeding to tasks**:
+- [ ] Goal is a single sentence describing the outcome
+- [ ] Architecture references specific C4 container/component
+- [ ] Tech Stack lists technologies (not "TBD")
+- [ ] Scope references specific design doc section
+- [ ] Codebase Verification has timestamp and findings (from codebase-investigator)
+- [ ] References include absolute paths
 
 ### Task Template
 
@@ -320,12 +362,15 @@ Before finalizing each milestone plan:
 
 | Mistake | Why It Fails | Correct Approach |
 |---------|--------------|------------------|
+| Skipping review mode choice | User loses control; default behavior may not match needs | AskUserQuestion FIRST before any other action |
 | Skipping scaffold task | Tests have nowhere to live | Always scaffold first |
 | Multiple assertions per test | Unclear which behavior failed | One assertion per test |
 | Assuming verification | Implementers skip verification | Explicit verify steps |
 | Copying code from design doc | Design docs get stale | Generate fresh code based on codebase investigation |
 | Batch planning without review | Early mistakes compound | Interactive milestone-by-milestone |
 | Skipping codebase verification | Tasks may not be implementable | Verify before AND after planning |
+| Incomplete milestone header | Implementer lacks context; wrong assumptions | All header fields are REQUIRED |
+| Skipping code review | Plan quality issues become implementation bugs | Code review is MANDATORY |
 
 ## Anti-Rationalizations
 
@@ -334,6 +379,10 @@ Before finalizing each milestone plan:
 - "I'll combine these tasks to save time" — Granular tasks provide clearer progress signals. Keep them separate.
 - "Codebase verification is overhead" — Verification prevents planning tasks for files that don't exist. Do it.
 - "The implementer will figure out verification" — They won't, or they'll do it inconsistently. Be explicit.
+- "I'll ask about review mode later" — No. Review mode affects everything. Ask FIRST before any other action.
+- "The header fields are obvious" — Missing context causes wrong assumptions. Fill in every field.
+- "Code review is overkill for this plan" — Even simple plans benefit from a second pass. Review is MANDATORY.
+- "Batch mode is fine for this" — User didn't choose that. Ask explicitly. Never assume.
 
 ## Task Tracking
 
