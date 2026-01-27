@@ -41,12 +41,19 @@ Default to **checklist** for simplicity, but use `AskUserQuestion` to ask the us
 
 ### Step 3: Constrain Scope
 
-**Maximum 5 AC per milestone** (excluding automated tests).
+**Target 5 AC per milestone** (excluding automated tests). More than 5 is a signal the milestone may be too broad.
 
-If you need more than 5:
-- The milestone is too broad — split it
-- Some AC are task-level, not milestone-level — demote them
-- Some AC are redundant — consolidate them
+**When you identify more than 5 AC**:
+
+1. **Propose all AC first.** Don't silently drop criteria — they may be important.
+2. **Use AskUserQuestion** to present options:
+   - Keep all AC (justified if truly atomic and necessary)
+   - Split into separate milestones (if AC cluster into distinct deliverables)
+   - Demote some to task-level AC (if some are implementation details)
+   - Consolidate redundant AC (if some overlap)
+3. **Document the decision.** Note why the constraint was exceeded or how it was resolved.
+
+The 5-AC limit is a smell detector, not a hard rule. Some milestones legitimately need more; the key is making that a conscious choice, not an accident.
 
 ### Step 4: Match Grain to Work Item
 
@@ -74,7 +81,7 @@ AC Checklist:
 [ ] Observable — behavior or output, not internal state
 [ ] Independent — can verify without knowing implementation
 [ ] Atomic — one condition per AC, no "and"
-[ ] Count ≤ 5 — or split the milestone
+[ ] Count discussed — if > 5, user chose how to handle
 ```
 
 ## Common Mistakes
@@ -84,7 +91,7 @@ AC Checklist:
 | Vague AC ("works correctly") | Not testable, subjective | Specify observable behavior |
 | Implementation-focused ("uses Redis") | Prescriptive, not outcome-focused | State the outcome ("cache hit rate > 90%") |
 | Compound AC ("X and Y and Z") | Partial pass is ambiguous | Split into separate AC |
-| 6+ AC | Milestone too broad | Split milestone or demote to task AC |
+| 6+ AC without discussion | User didn't consciously choose scope | Propose all AC, then ask user how to handle |
 | Missing expected result | Unclear what success looks like | Include what user sees/receives |
 | Task-level detail in milestone AC | Wrong grain, clutters milestone | Save implementation details for task breakdown |
 
@@ -92,7 +99,7 @@ AC Checklist:
 
 - "This AC is obvious" — If it's obvious, it's quick to write. Write it anyway. Obvious to you isn't obvious to the next engineer.
 - "We'll know it when we see it" — That's not acceptance criteria, that's hope. Specify the observable outcome.
-- "Five AC is too restrictive" — Five is a signal, not a prison. If you need six, split the milestone. The constraint exists to prevent scope creep.
+- "Five AC is too restrictive" — Five is a signal, not a prison. If you need more, propose them all and ask the user how to proceed. The constraint exists to surface scope conversations, not to silently drop important criteria.
 - "This is just a small feature" — Small features still need clear completion criteria. Size doesn't excuse vagueness.
 
 ## Formats Reference
@@ -143,6 +150,6 @@ Best for performance requirements and SLAs.
 ## Summary
 
 1. **Every AC must be testable.** If you can't write a test or demo it, rewrite it.
-2. **Maximum 5 AC per milestone.** More than 5 means split the milestone or demote to task level.
+2. **Target 5 AC per milestone.** More than 5 is a signal — propose all, then ask user how to proceed.
 3. **Match grain to work item.** Milestone AC are demo-focused; task AC are implementation-focused.
 4. **State outcomes, not implementations.** "User sees confirmation" not "function returns true."
