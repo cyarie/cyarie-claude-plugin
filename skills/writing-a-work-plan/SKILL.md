@@ -130,6 +130,23 @@ For functionality or integration milestones, create a scaffold task first:
 
 #### 3D: Create One Task Per AC
 
+**Before writing any task**, understand the relationship between parent AC and task AC:
+
+- **Parent AC**: The milestone-level acceptance criterion this task contributes to
+- **Task AC**: This task's specific, testable criterion — more granular than the parent
+
+**Task AC must meet the same rigor as milestone AC** (per `writing-effective-acceptance-criteria`):
+- Testable — clear pass/fail
+- Observable — behavior or output, not internal state
+- Atomic — one condition, no "and"
+- More specific than the parent AC
+
+**Example**:
+- Parent AC: "User can preview Trackman data as a formatted table"
+- Task AC: "TrackmanParser.parse() returns ParseResult with session_date and shots list"
+
+The task AC is a building block toward the parent AC, not a copy of it.
+
 **For Infrastructure AC**:
 
 ```markdown
@@ -139,7 +156,8 @@ For functionality or integration milestones, create a scaffold task first:
 |-------|-------|
 | **Job Story** | When [situation], I want [motivation], so [outcome]. |
 | **Description** | [What this task creates/configures] |
-| **AC** | [The specific AC being addressed] |
+| **Parent AC** | [Which milestone AC this task contributes to] |
+| **Task AC** | [This task's specific, testable acceptance criterion] |
 | **Type** | Infrastructure |
 
 **Implementation Steps**:
@@ -158,7 +176,8 @@ For functionality or integration milestones, create a scaffold task first:
 |-------|-------|
 | **Job Story** | When [situation], I want [motivation], so [outcome]. |
 | **Description** | TDD implementation of [behavior]. |
-| **AC** | [The specific AC being addressed] |
+| **Parent AC** | [Which milestone AC this task contributes to] |
+| **Task AC** | [This task's specific, testable acceptance criterion] |
 | **Type** | Functionality |
 
 **Implementation Steps**:
@@ -189,7 +208,8 @@ For functionality or integration milestones, create a scaffold task first:
 |-------|-------|
 | **Job Story** | When [user action], I want [end-to-end behavior]. |
 | **Description** | Wire [components] together; test full flow. |
-| **AC** | [The specific AC being addressed] |
+| **Parent AC** | [Which milestone AC this task contributes to] |
+| **Task AC** | [This task's specific, testable acceptance criterion] |
 | **Type** | Integration |
 
 **Implementation Steps**:
@@ -216,6 +236,33 @@ For functionality or integration milestones, create a scaffold task first:
 
 If an AC implies multiple assertions or behaviors, split into multiple tasks. Each test should have a **single assertion** following Arrange/Act/Assert.
 
+#### 3E-1: Validate Job Stories and Task AC
+
+**Before presenting tasks to user**, validate each task against these checklists:
+
+**Job Story Checklist**:
+- [ ] Has all three parts: When [situation], I want [motivation], so [outcome]
+- [ ] Situation describes a real context (not generic "I am working on this task")
+- [ ] Motivation describes what the actor wants to accomplish
+- [ ] Outcome describes the benefit or value delivered
+- [ ] Written from the implementer's or user's perspective (not "the system")
+
+**Bad**: "When implementing this feature, I want to write code, so it works."
+**Good**: "When I parse a Trackman JSON file, I want to extract shot data into a structured format, so I can transform and store it consistently."
+
+**Task AC Checklist** (same rigor as milestone AC):
+- [ ] Testable — clear pass/fail determination
+- [ ] Observable — behavior or output, not internal state
+- [ ] Atomic — one condition, no compound "and"
+- [ ] More granular than parent AC — a building block, not a copy
+- [ ] Independent — can verify without knowing other task internals
+
+**Bad**: "Parser works correctly" (vague, not testable)
+**Bad**: "User can preview Trackman data" (copied from parent AC)
+**Good**: "TrackmanParser.parse() returns ParseResult with non-empty shots list when given valid JSON"
+
+**If validation fails**: Rewrite the job story or task AC before proceeding. Do not present tasks with placeholder or copied content.
+
 #### 3F: Review with User
 
 Present the task breakdown for approval:
@@ -228,6 +275,11 @@ Present the task breakdown for approval:
 - **Revise**: I have feedback on specific tasks (user provides details via "Other")
 
 Do not proceed to the next milestone until user approves or revisions are complete.
+
+**Immediately after approval, write this milestone to disk** (see Phase 6 for directory structure). This enables:
+- Session recovery if context is cleared
+- Incremental progress tracking
+- Resumption from last completed milestone
 
 ### Phase 4: Codebase Verification (Post-Planning)
 
@@ -266,14 +318,20 @@ Run `code-reviewer` agent over the milestone plan.
 
 ### Phase 6: Write to Disk
 
-Create directory structure:
+**Write each milestone immediately after user approval** (in Phase 3F), not at the end.
+
+This enables session recovery — if context is cleared mid-planning, you can resume from the last written milestone.
+
+Directory structure:
 ```
 docs/work-plans/YYYY-MM-DD-<plan-name>/
-├── milestone_01.md
-├── milestone_02.md
+├── milestone_01.md  ← written after M1 approval
+├── milestone_02.md  ← written after M2 approval
 ├── ...
 └── milestone_NN.md
 ```
+
+**On resumption**: Check which milestone files exist, read the last one to understand context, and continue from the next milestone.
 
 ## Document Format
 
@@ -333,7 +391,8 @@ Missing header fields cause implementation failures:
 |-------|-------|
 | **Job Story** | When [situation], I want [motivation], so [outcome]. |
 | **Description** | [What this task does] |
-| **AC** | [The acceptance criterion being addressed] |
+| **Parent AC** | [Which milestone AC this task contributes to] |
+| **Task AC** | [This task's specific, testable acceptance criterion] |
 | **Type** | Infrastructure / Functionality / Integration |
 | **Blocks** | [Tasks that cannot start until this completes] |
 | **Blocked By** | [Tasks that must complete before this can start] |
@@ -371,6 +430,8 @@ Before finalizing each milestone plan:
 | Skipping codebase verification | Tasks may not be implementable | Verify before AND after planning |
 | Incomplete milestone header | Implementer lacks context; wrong assumptions | All header fields are REQUIRED |
 | Skipping code review | Plan quality issues become implementation bugs | Code review is MANDATORY |
+| Copying parent AC to task AC | Task AC should be more granular | Write task-specific AC that builds toward parent |
+| Lazy job stories ("When working on X") | No real context; doesn't guide implementation | Include real situation, motivation, outcome |
 
 ## Anti-Rationalizations
 
@@ -383,6 +444,9 @@ Before finalizing each milestone plan:
 - "The header fields are obvious" — Missing context causes wrong assumptions. Fill in every field.
 - "Code review is overkill for this plan" — Even simple plans benefit from a second pass. Review is MANDATORY.
 - "Batch mode is fine for this" — User didn't choose that. Ask explicitly. Never assume.
+- "The task AC is the same as the parent AC" — No. Task AC must be more granular. If they're identical, you haven't decomposed the work.
+- "The job story format is tedious" — The format forces clarity. A vague job story produces vague implementation. Write all three parts.
+- "This task is obvious, I'll simplify the AC" — Obvious to you isn't obvious to the implementer. Be explicit.
 
 ## Task Tracking
 
