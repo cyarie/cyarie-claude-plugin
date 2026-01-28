@@ -92,7 +92,7 @@ After investigating, assess whether the codebase's test granularity matches the 
 
 Document the user's choice in the milestone plan header under "Testing approach".
 
-**Step 2** (Sequential, after Step 1): Dispatch `codebase-investigator` agent to verify **design assumptions**:
+**Step 2** (Sequential, after Step 1B): Dispatch `codebase-investigator` agent to verify **design assumptions**:
 - Do files exist where the design expects them?
 - Do expected features/dependencies exist?
 - Is there drift between design doc and current code?
@@ -186,7 +186,7 @@ The task AC is a building block toward the parent AC, not a copy of it.
 
 **For Functionality AC** (TDD):
 
-```markdown
+````markdown
 **Task N.X: [Description] (TDD)**
 
 | Field | Value |
@@ -214,11 +214,11 @@ The task AC is a building block toward the parent AC, not a copy of it.
 3. **Green**: Implement minimal code to pass the test
 4. Verify: Test **passes**
 5. Commit: "feat(mN): [description]"
-```
+````
 
 **For Integration AC** (TDD):
 
-```markdown
+````markdown
 **Task N.X: Wire and test [command/flow]**
 
 | Field | Value |
@@ -247,13 +247,13 @@ The task AC is a building block toward the parent AC, not a copy of it.
 3. **Green**: Wire components in command handler
 4. Verify: Test **passes**
 5. Commit: "feat(mN): wire [command]"
-```
+````
 
 #### 3E: Check for Compound AC
 
 If an AC implies multiple assertions or behaviors, split into multiple tasks. Each test should have a **single assertion** following Arrange/Act/Assert.
 
-#### 3E-1: Validate Job Stories and Task AC
+#### 3F: Validate Job Stories and Task AC
 
 **Before presenting tasks to user**, validate each task against these checklists:
 
@@ -280,7 +280,7 @@ If an AC implies multiple assertions or behaviors, split into multiple tasks. Ea
 
 **If validation fails**: Rewrite the job story or task AC before proceeding. Do not present tasks with placeholder or copied content.
 
-#### 3E-2: Validate Test Granularity
+#### 3G: Validate Test Granularity
 
 **Skip this section if user chose "Match existing patterns" in Phase 2 Step 1B.**
 
@@ -304,7 +304,7 @@ If user chose "Apply best practices" or "Hybrid" (for new test files), validate 
 
 **Before proceeding**: If any task fails this checkpoint, split it into multiple tasks. Each task should have a test that a developer could implement in a single TDD cycle.
 
-#### 3F: Review with User
+#### 3H: Review with User
 
 Present the task breakdown for approval:
 - List all tasks with types
@@ -359,11 +359,12 @@ Run `code-reviewer` agent over the milestone plan.
 
 ### Phase 6: Write to Disk
 
-**Write each milestone immediately after user approval** (in Phase 3F), not at the end.
+**Write each milestone immediately after user approval** (in Phase 3H), not at the end.
 
 This enables session recovery — if context is cleared mid-planning, you can resume from the last written milestone.
 
 Directory structure:
+
 ```
 docs/work-plans/YYYY-MM-DD-<plan-name>/
 ├── milestone_01.md  ← written after M1 approval
