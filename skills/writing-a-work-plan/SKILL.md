@@ -75,6 +75,8 @@ Before writing any tasks, verify the codebase matches design assumptions.
 - What fixtures are available?
 - Where do tests live (`tests/`, `test/`, colocated)?
 
+**IMPORTANT**: Learn structural patterns (file locations, fixtures, naming conventions) but **do not inherit test granularity patterns** from the existing codebase. Legacy codebases often have broad tests covering multiple behaviors. Apply the one-behavior-per-test principle from `writing-useful-tests` regardless of how existing tests are structured. If you see tests with multiple assertions or vague names like `test_parser_works`, note this as a pattern to avoid, not follow.
+
 **Step 2** (Sequential, after Step 1): Dispatch `codebase-investigator` agent to verify **design assumptions**:
 - Do files exist where the design expects them?
 - Do expected features/dependencies exist?
@@ -263,6 +265,28 @@ If an AC implies multiple assertions or behaviors, split into multiple tasks. Ea
 
 **If validation fails**: Rewrite the job story or task AC before proceeding. Do not present tasks with placeholder or copied content.
 
+#### 3E-2: Validate Test Granularity
+
+**For each functionality or integration task**, verify the test covers exactly one behavior.
+
+**Granularity Checkpoint**:
+- [ ] Test name describes ONE specific behavior (not "test_parser_works" or "test_validation")
+- [ ] Single `assert` statement (or tightly related assertions for one outcome)
+- [ ] Covers ONE "when X, then Y" scenario
+- [ ] If describing the test requires "and" or "also", split the task
+
+**Red Flags** (stop and split the task):
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| "Test that X works correctly" | Vague, covers multiple behaviors | Name the specific behavior being tested |
+| Test with 3+ assertions | Testing multiple outcomes | One task per outcome |
+| "When X, it does A and B" | Compound behavior | Separate tasks for A and B |
+| Test name matches parent AC verbatim | Didn't decompose the work | Write more granular test |
+| Test covers "happy path and error cases" | Multiple scenarios | Separate tasks per scenario |
+
+**Before proceeding**: If any task fails this checkpoint, split it into multiple tasks. Each task should have a test that a developer could implement in a single TDD cycle (red → green in under 15 minutes).
+
 #### 3F: Review with User
 
 Present the task breakdown for approval:
@@ -432,6 +456,7 @@ Before finalizing each milestone plan:
 | Skipping code review | Plan quality issues become implementation bugs | Code review is MANDATORY |
 | Copying parent AC to task AC | Task AC should be more granular | Write task-specific AC that builds toward parent |
 | Lazy job stories ("When working on X") | No real context; doesn't guide implementation | Include real situation, motivation, outcome |
+| Inheriting broad tests from codebase | Legacy patterns produce vague, multi-behavior tests | Apply one-behavior-per-test regardless of existing patterns |
 
 ## Anti-Rationalizations
 
@@ -471,5 +496,6 @@ Use `TaskCreate` and `TaskUpdate` to track progress. Note blocking dependencies.
 3. **Three task types.** Infrastructure (operational), Functionality (unit TDD), Integration (integration TDD).
 4. **Always scaffold first.** Test files and module skeletons before TDD cycles.
 5. **Include test code.** Concrete examples guide implementers.
-6. **Explicit verification.** Never assume implementers will verify or commit.
-7. **Interactive review.** Approve each milestone before proceeding to the next.
+6. **One behavior per test.** If a test covers multiple scenarios or needs multiple assertions, split it. Don't inherit broad test patterns from legacy codebases.
+7. **Explicit verification.** Never assume implementers will verify or commit.
+8. **Interactive review.** Approve each milestone before proceeding to the next.
