@@ -1,6 +1,6 @@
 ---
 name: executing-a-work-plan
-description: Use when executing a work plan created by building-a-work-plan. Orchestrates milestone-by-milestone implementation using code-worker agents with per-task code review.
+description: Use when executing a work plan created by building-a-work-plan. Orchestrates milestone-by-milestone implementation using code-worker agents with per-milestone code review.
 command: execute-work-plan
 ---
 
@@ -8,7 +8,7 @@ command: execute-work-plan
 
 ## Overview
 
-This skill orchestrates the execution of work plans created by `building-a-work-plan`. It processes milestones sequentially, dispatching `code-worker` agents for each task, conducting code review after each task, and fixing all issues before proceeding to the next task. The goal is complete, reviewed implementation — not just "code that works."
+This skill orchestrates the execution of work plans created by `building-a-work-plan`. It processes milestones sequentially, dispatching `code-worker` agents for each task, then conducting code review after all tasks in a milestone are complete. The goal is complete, reviewed implementation — not just "code that works."
 
 ## Key Principles
 
@@ -41,11 +41,11 @@ DO write: [paste the full markdown report from the code-reviewer]
 
 Read one milestone, execute all its tasks, review, then move to the next. This preserves context within token budgets. If you read everything at once, you'll run out of context before finishing.
 
-### Per-Task Review
+### Per-Milestone Review
 
-**Review after every task completion, not at milestone end.**
+**Review after all tasks in a milestone are complete, not after each individual task.**
 
-Per-task review catches issues early before they compound. If a task introduces a bug, the next task may build on that bug, making it harder to fix. Review immediately, fix immediately, then proceed.
+Per-milestone review balances thoroughness with efficiency. Reviewing every task individually consumes significant context and time. Milestone-level review catches cross-task integration issues while keeping execution focused.
 
 ## When to Use
 
@@ -86,21 +86,21 @@ Create tasks at session start. Update status as you progress.
 ```
 ◻ #1 Discover: List milestones without reading full content
 ◻ #2 Execute Milestone 1: [title from header]
-   ◻ Task 1.1: [task title] → Review → Fix
-   ◻ Task 1.2: [task title] → Review → Fix
+   ◻ Task 1.1: [task title]
+   ◻ Task 1.2: [task title]
    ...
-   ◻ Milestone 1 Review: Cross-task integration check
+   ◻ Milestone 1 Review: Review all tasks → Fix issues
 ◻ #3 Execute Milestone 2: [title]
-   ◻ Task 2.1: [task title] → Review → Fix
+   ◻ Task 2.1: [task title]
    ...
-   ◻ Milestone 2 Review: Cross-task integration check
+   ◻ Milestone 2 Review: Review all tasks → Fix issues
 ... (repeat for each milestone)
 ◻ #N Final Review: Full implementation review
 ◻ #N+1 Complete: Summary and handoff
 ```
 
-Each task follows: Implement → Review → Fix → Next Task.
-Each milestone ends with: Milestone Review → Fix cross-task issues → Next Milestone.
+Each task follows: Implement → Record completion → Next Task.
+Each milestone ends with: Milestone Review → Fix all issues → Next Milestone.
 
 Use `TaskCreate` and `TaskUpdate` to manage these.
 
@@ -152,9 +152,9 @@ Cannot implement without tests. Please update the work plan.
 
 Do not implement functionality without tests specified in the plan.
 
-#### 2c. Execute Task with Review
+#### 2c. Execute Tasks
 
-For each task in the milestone, follow this cycle:
+For each task in the milestone:
 
 **Step 1: Check dependencies**
 
@@ -176,45 +176,22 @@ Report back with your completion report.
 
 **Step 3: Print the full agent response.** Do not summarize.
 
-**Step 4: Code review this task**
+**Step 4: Record completion**
 
-Immediately after the task completes:
+Note task number and commit SHA.
 
-1. **Capture git state**:
-```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # Before this task's commit
-HEAD_SHA=$(git rev-parse HEAD)     # After this task's commit
-```
+**Step 5: Proceed to next task**
 
-2. **Use `requesting-code-review` skill**:
-   - Provide what was implemented (this task only)
-   - Reference the milestone file and task number
-   - Include base and head commit SHAs
+Continue until all tasks in the milestone are complete.
 
-3. **Handle review results**:
-   - **Zero issues**: Record completion, proceed to next task
-   - **Any issues**: Dispatch `bug-worker` agent to fix ALL issues (Critical, Important, Minor)
+#### 2d. Three-Strike Rule (Per Milestone)
 
-4. **Print full review and fix responses.**
-
-5. **Re-review after fixes.** Loop until zero issues for this task.
-
-**Step 5: Record completion**
-
-Note task number, commit SHA, review cycles needed.
-
-**Step 6: Proceed to next task**
-
-Only after this task passes review with zero issues.
-
-#### 2d. Three-Strike Rule (Per Task)
-
-If the same issue persists after three review cycles for a single task:
+If the same issue persists after three review cycles for a milestone:
 
 ```
 ESCALATION REQUIRED
 
-Task: [task number and title]
+Milestone: [milestone number and title]
 Issue "[issue title]" has persisted through 3 review cycles.
 
 Location: [file:line]
@@ -227,25 +204,36 @@ Attempted fixes:
 This requires human intervention. Please review and advise.
 ```
 
-Stop and wait for human guidance. Do not continue to next task.
+Stop and wait for human guidance. Do not continue to next milestone.
 
-#### 2e. Milestone Completion Review
+#### 2e. Milestone Review
 
-After all tasks in the milestone pass their individual reviews:
+After all tasks in the milestone are complete:
 
-1. **Run milestone-level review** covering all tasks together:
+1. **Capture git state**:
+```bash
+BASE_SHA=$(git rev-parse HEAD~N)  # Before first task's commit (N = number of tasks)
+HEAD_SHA=$(git rev-parse HEAD)     # After last task's commit
+```
+
+2. **Run milestone-level review** covering all tasks:
    - Use `requesting-code-review` skill
-   - Reference the full milestone (not individual task)
+   - Reference the full milestone
    - Include commit range from milestone start to end
 
-2. **This catches cross-task issues** that individual task reviews might miss:
+3. **This catches**:
+   - Issues in individual task implementations
    - Integration problems between tasks
    - Inconsistent patterns across tasks
    - Missing edge cases at boundaries
 
-3. **Handle review results** same as task review:
-   - Zero issues: Mark milestone complete
-   - Any issues: Fix with `bug-worker`, re-review
+4. **Handle review results**:
+   - **Zero issues**: Mark milestone complete, proceed to next milestone
+   - **Any issues**: Dispatch `bug-worker` agent to fix ALL issues (Critical, Important, Minor)
+
+5. **Print full review and fix responses.**
+
+6. **Re-review after fixes.** Loop until zero issues for this milestone.
 
 #### 2f. Proceed to Next Milestone
 
@@ -344,7 +332,7 @@ If interrupted mid-execution:
 | Agent | Role | When Dispatched |
 |-------|------|-----------------|
 | `code-worker` | Implements individual tasks | For each task in a milestone |
-| `code-reviewer` | Reviews completed work | After each task AND after milestone completion |
+| `code-reviewer` | Reviews completed work | After all tasks in a milestone are complete |
 | `bug-worker` | Fixes review issues | When any review finds issues |
 | `documentarian` | Updates project context files | After final review passes, before completion report |
 
@@ -353,8 +341,7 @@ If interrupted mid-execution:
 | Mistake | Why It Fails | Correct Approach |
 |---------|--------------|------------------|
 | Reading all milestones upfront | Exhausts context | Just-in-time loading |
-| Skipping per-task review | Bugs compound across tasks | Review after EVERY task |
-| Skipping milestone review | Cross-task issues missed | Also review at milestone end |
+| Skipping milestone review | Bugs and cross-task issues missed | Review after ALL tasks in milestone complete |
 | Summarizing agent output | Human can't see what happened | Print full responses |
 | Skipping functionality tests | Untested code ships bugs | Verify plan includes tests |
 | Continuing after 3 strikes | Infinite loop on unfixable issues | Escalate to human |
@@ -365,8 +352,7 @@ If interrupted mid-execution:
 
 - "I'll read all milestones to understand the full scope" — No. Context limits are real. Read just-in-time.
 - "I remember what the milestone said" — No. Always read just-in-time. Memory drifts.
-- "I'll batch the reviews to save tokens" — No. Per-task review catches bugs before they compound. Fix early.
-- "The task review passed, skip milestone review" — No. Milestone review catches cross-task integration issues.
+- "I'll skip the milestone review since each task was tested" — No. Tests verify individual behavior; review catches cross-task integration issues and code quality problems.
 - "The agent response is too long, I'll summarize" — No. Human transparency requires full output.
 - "I'll just say how many issues were found" — No. Print every issue with Location, Issue, Impact, Fix. The user needs details to understand what's happening.
 - "Minor issues can wait until the end" — No. Fix ALL issues including Minor before proceeding.
@@ -377,8 +363,7 @@ If interrupted mid-execution:
 
 1. **Just-in-time loading.** Read one milestone at a time.
 2. **Print full agent responses.** Human transparency is non-negotiable.
-3. **Per-task review.** Review after every task completion.
-4. **Milestone completion review.** Also review at milestone end for cross-task issues.
-5. **Fix ALL issues.** Critical, Important, AND Minor.
-6. **Three-strike rule.** Escalate persistent issues to human.
-7. **Track progress with tasks.** Survive interruptions.
+3. **Per-milestone review.** Review after all tasks in a milestone are complete.
+4. **Fix ALL issues.** Critical, Important, AND Minor.
+5. **Three-strike rule.** Escalate persistent issues to human.
+6. **Track progress with tasks.** Survive interruptions.
