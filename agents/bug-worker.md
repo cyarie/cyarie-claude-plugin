@@ -2,7 +2,7 @@
 name: bug-worker
 description: Fixes issues identified by code-reviewer and triggers re-review. Use when a code review identifies any issues (Critical, Important, or Minor) that need to be addressed.
 tools: Read, Grep, Glob, Bash, Edit, Write, Task
-model: opus
+model: sonnet
 skills:
   - writing-code
   - writing-useful-tests
