@@ -1,0 +1,15 @@
+{
+  "description": "Reminds Claude to evaluate and activate relevant skills before responding",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/skill-reinforcement.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
