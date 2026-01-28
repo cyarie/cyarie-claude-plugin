@@ -75,6 +75,23 @@ Before writing any tasks, verify the codebase matches design assumptions.
 - What fixtures are available?
 - Where do tests live (`tests/`, `test/`, colocated)?
 
+**Step 1B: Evaluate Test Granularity Patterns**
+
+After investigating, assess whether the codebase's test granularity matches the one-behavior-per-test principle from `writing-useful-tests`. Look for:
+- Tests with multiple assertions covering different behaviors
+- Vague test names like `test_parser_works` or `test_validation`
+- Tests covering both happy path and error cases together
+
+**If you detect a discrepancy**, use `AskUserQuestion` before proceeding:
+
+> "The existing tests in this codebase use [describe pattern - e.g., 'broader coverage with multiple assertions per test']. The `writing-useful-tests` skill recommends one-behavior-per-test for clearer failure signals. How should I write test tasks for this plan?"
+>
+> - **Match existing patterns** (Recommended if codebase tests are consistent and well-maintained): Write tests that match the existing style for consistency
+> - **Apply best practices**: Write granular one-behavior-per-test regardless of existing patterns
+> - **Hybrid**: Match existing patterns for modifications to existing test files; use best practices for new test files
+
+Document the user's choice in the milestone plan header under "Testing approach".
+
 **Step 2** (Sequential, after Step 1): Dispatch `codebase-investigator` agent to verify **design assumptions**:
 - Do files exist where the design expects them?
 - Do expected features/dependencies exist?
@@ -263,6 +280,30 @@ If an AC implies multiple assertions or behaviors, split into multiple tasks. Ea
 
 **If validation fails**: Rewrite the job story or task AC before proceeding. Do not present tasks with placeholder or copied content.
 
+#### 3E-2: Validate Test Granularity
+
+**Skip this section if user chose "Match existing patterns" in Phase 2 Step 1B.**
+
+If user chose "Apply best practices" or "Hybrid" (for new test files), validate that each functionality or integration task covers exactly one behavior.
+
+**Granularity Checkpoint**:
+- [ ] Test name describes ONE specific behavior (not "test_parser_works" or "test_validation")
+- [ ] Single `assert` statement (or tightly related assertions for one outcome)
+- [ ] Covers ONE "when X, then Y" scenario
+- [ ] If describing the test requires "and" or "also", split the task
+
+**Red Flags** (stop and split the task):
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| "Test that X works correctly" | Vague, covers multiple behaviors | Name the specific behavior being tested |
+| Test with 3+ assertions | Testing multiple outcomes | One task per outcome |
+| "When X, it does A and B" | Compound behavior | Separate tasks for A and B |
+| Test name matches parent AC verbatim | Didn't decompose the work | Write more granular test |
+| Test covers "happy path and error cases" | Multiple scenarios | Separate tasks per scenario |
+
+**Before proceeding**: If any task fails this checkpoint, split it into multiple tasks. Each task should have a test that a developer could implement in a single TDD cycle.
+
 #### 3F: Review with User
 
 Present the task breakdown for approval:
@@ -432,6 +473,7 @@ Before finalizing each milestone plan:
 | Skipping code review | Plan quality issues become implementation bugs | Code review is MANDATORY |
 | Copying parent AC to task AC | Task AC should be more granular | Write task-specific AC that builds toward parent |
 | Lazy job stories ("When working on X") | No real context; doesn't guide implementation | Include real situation, motivation, outcome |
+| Assuming test granularity without asking | May conflict with codebase conventions or miss improvement opportunity | Ask user to choose: match existing, apply best practices, or hybrid |
 
 ## Anti-Rationalizations
 
@@ -447,6 +489,8 @@ Before finalizing each milestone plan:
 - "The task AC is the same as the parent AC" — No. Task AC must be more granular. If they're identical, you haven't decomposed the work.
 - "The job story format is tedious" — The format forces clarity. A vague job story produces vague implementation. Write all three parts.
 - "This task is obvious, I'll simplify the AC" — Obvious to you isn't obvious to the implementer. Be explicit.
+- "The codebase has broad tests, so I'll match that" — Don't assume. Ask the user whether to match existing patterns or apply best practices.
+- "Best practices are always better, I'll ignore existing patterns" — Don't assume. Consistency has value. Ask the user to choose.
 
 ## Task Tracking
 
@@ -471,5 +515,6 @@ Use `TaskCreate` and `TaskUpdate` to track progress. Note blocking dependencies.
 3. **Three task types.** Infrastructure (operational), Functionality (unit TDD), Integration (integration TDD).
 4. **Always scaffold first.** Test files and module skeletons before TDD cycles.
 5. **Include test code.** Concrete examples guide implementers.
-6. **Explicit verification.** Never assume implementers will verify or commit.
-7. **Interactive review.** Approve each milestone before proceeding to the next.
+6. **Ask about test granularity.** When codebase patterns differ from best practices, ask the user whether to match existing style, apply best practices, or use a hybrid approach.
+7. **Explicit verification.** Never assume implementers will verify or commit.
+8. **Interactive review.** Approve each milestone before proceeding to the next.
